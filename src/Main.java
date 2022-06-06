@@ -17,16 +17,16 @@ public class Main {
                     System.out.println("Введите описание задачи");
                     String tasKDescription = scanner.nextLine();
                     task.setDescription(tasKDescription);
-                    taskManager.addNewTask(task);
+                    taskManager.addTask(task);
                     break;
                 case("2"):
                     System.out.println("Введите название задачи");
                     String nameOfEpicTask = scanner.nextLine();
-                    EpicTask epicTask = new EpicTask(nameOfEpicTask);
+                    Epic epic = new Epic(nameOfEpicTask);
                     System.out.println("Введите описание задачи");
                     String epicDescription = scanner.nextLine();
-                    epicTask.setDescription(epicDescription);
-                    taskManager.addNewEpicTask(epicTask);
+                    epic.setDescription(epicDescription);
+                    taskManager.addEpicTask(epic);
                     break;
                 case("3"):
                     System.out.println("Введите ID эпик задачи");
@@ -34,11 +34,11 @@ public class Main {
                     System.out.println("Введите название задачи");
                     String fix = scanner.nextLine(); //доп сканер лови \n от предыдущего сканера
                     String nameOfSubTask = scanner.nextLine();
-                    SubTask subTask = new SubTask(nameOfSubTask, epicsId);
+                    Subtask subtask = new Subtask(nameOfSubTask, epicsId);
                     System.out.println("Введите описание задачи");
                     String subDescription = scanner.nextLine();
-                    subTask.setDescription(subDescription);
-                    taskManager.addNewSubTask(subTask);
+                    subtask.setDescription(subDescription);
+                    taskManager.addSubTask(subtask);
                     break;
                 case("4"):
                     System.out.println("Введите ID");
@@ -48,7 +48,7 @@ public class Main {
                 case("5"):
                     System.out.println("Введите ID");
                     int idForEpicSubTasks = scanner.nextInt();
-                    taskManager.getEpicSubTasks(idForEpicSubTasks);
+                    taskManager.getEpicSubtasks(idForEpicSubTasks);
                     break;
                 case("6"):
                     taskManager.showAllTasks();
@@ -69,11 +69,9 @@ public class Main {
                     System.out.println("Укажите ID");
                     int idForRemove = scanner.nextInt();
                     taskManager.removeTaskById(idForRemove);
-                    System.out.println("Задача удалена");
                     break;
                 case("10"):
                     taskManager.removeAllTasks();
-                    System.out.println("Все задачи удалены");
                     break;
                 case("0"):
                     System.out.println("Выход");

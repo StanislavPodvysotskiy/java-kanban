@@ -1,20 +1,24 @@
 public class Task {
 
-    private String nameOfTask;
+    private final String name;
     private String description;
     private int id;
     private String status = "New";
 
-    public Task(String nameOfTask) {
-        this.nameOfTask=nameOfTask;
+    public Task(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public String getNameOfTask() {
-        return nameOfTask;
+    public int getId() {
+        return id;
     }
 
     public String setStatus(String status) {
