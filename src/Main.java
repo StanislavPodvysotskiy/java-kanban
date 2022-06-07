@@ -12,17 +12,17 @@ public class Main {
             switch (choice) {
                 case("1"):
                     System.out.println("Введите название задачи");
-                    String nameOfTask = scanner.nextLine();
-                    Task task = new Task(nameOfTask);
+                    String taskName = scanner.nextLine();
+                    Task task = new Task(taskName);
                     System.out.println("Введите описание задачи");
-                    String tasKDescription = scanner.nextLine();
-                    task.setDescription(tasKDescription);
+                    String taskDescription = scanner.nextLine();
+                    task.setDescription(taskDescription);
                     taskManager.addTask(task);
                     break;
                 case("2"):
                     System.out.println("Введите название задачи");
-                    String nameOfEpicTask = scanner.nextLine();
-                    Epic epic = new Epic(nameOfEpicTask);
+                    String epicName = scanner.nextLine();
+                    Epic epic = new Epic(epicName);
                     System.out.println("Введите описание задачи");
                     String epicDescription = scanner.nextLine();
                     epic.setDescription(epicDescription);
@@ -30,11 +30,11 @@ public class Main {
                     break;
                 case("3"):
                     System.out.println("Введите ID эпик задачи");
-                    int epicsId = scanner.nextInt();
+                    int epicId = scanner.nextInt();
                     System.out.println("Введите название задачи");
                     String fix = scanner.nextLine(); //доп сканер лови \n от предыдущего сканера
-                    String nameOfSubTask = scanner.nextLine();
-                    Subtask subtask = new Subtask(nameOfSubTask, epicsId);
+                    String subtaskName = scanner.nextLine();
+                    Subtask subtask = new Subtask(subtaskName, epicId);
                     System.out.println("Введите описание задачи");
                     String subDescription = scanner.nextLine();
                     subtask.setDescription(subDescription);
@@ -42,13 +42,13 @@ public class Main {
                     break;
                 case("4"):
                     System.out.println("Введите ID");
-                    int idForTask = scanner.nextInt();
-                    System.out.println(taskManager.getByID(idForTask));
+                    int taskId = scanner.nextInt();
+                    System.out.println(taskManager.getById(taskId));
                     break;
                 case("5"):
                     System.out.println("Введите ID");
-                    int idForEpicSubTasks = scanner.nextInt();
-                    taskManager.getEpicSubtasks(idForEpicSubTasks);
+                    int subtasksId = scanner.nextInt();
+                    taskManager.getEpicSubtasks(subtasksId);
                     break;
                 case("6"):
                     taskManager.showAllTasks();

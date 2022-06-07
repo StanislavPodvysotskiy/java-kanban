@@ -33,8 +33,8 @@ public class TaskManager {
         }
     }
 
-    //метод возвращает с названием и описанием задачи
-    public String getByID(int id) {
+    //метод возвращает название и описание задачи
+    public String getById(int id) {
         String nameAndDescription = "Такой задачи нет";
         if (tasks.containsKey(id)) {
             nameAndDescription = "Задача: " + tasks.get(id).getName() + " Описание: " +tasks.get(id).getDescription();
@@ -139,7 +139,9 @@ public class TaskManager {
 
     //метод выводит все подзадачи выбранной эпик задачи, если они есть
     public void getEpicSubtasks(int id) {
-        if (subtasks.isEmpty()) {
+        if (!epics.containsKey(id)) {
+            System.out.println("Такой эпик задачи нет");
+        } else if (epics.get(id).getSubtaskIds().isEmpty()) {
             System.out.println("Подзадач пока нет");
         } else {
             System.out.println("Поиск подзадач для эпик задачи с ID " + id);
