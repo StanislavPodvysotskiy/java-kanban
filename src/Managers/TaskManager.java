@@ -1,10 +1,16 @@
+package Managers;
+import Tasks.Epic;
+import Tasks.Status;
+import Tasks.Subtask;
+import Tasks.Task;
+
 public interface TaskManager {
 
     void addTask(Task task);
 
     void addEpicTask(Epic task);
 
-    void addSubTask(Subtask task);
+    void addSubtask(Subtask task);
 
     String getById(int id);
 

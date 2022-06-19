@@ -1,3 +1,8 @@
+package Managers;
+import Tasks.Epic;
+import Tasks.Status;
+import Tasks.Subtask;
+import Tasks.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -26,10 +31,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     //метод добавляет новую подзадачу в хэшмап
     @Override
-    public void addSubTask(Subtask task) {
+    public void addSubtask(Subtask task) {
         if (epics.containsKey(task.getEpicId())) {
             task.setId(lastId++);
-            epics.get(task.getEpicId()).getSubtaskIds().add(task.getId());
+            epics.get(task.getEpicId()).addSubtask(task);
             subtasks.put(task.getId(), task);
             System.out.println("Задача создана");
         } else {
@@ -119,15 +124,15 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Задача удалена");
             //при удалении эпик задачи удаляются все его подзадачи
         } else if (epics.containsKey(id)) {
-            for (Integer subTasksId : epics.get(id).getSubtaskIds()) {
-                subtasks.remove(subTasksId);
+            for (Subtask subTasksId : epics.get(id).getSubtaskIds()) {
+                subtasks.remove(subTasksId.getId());
             }
             epics.remove(id);
             System.out.println("Задача удалена");
             //при удалении подзадачи удаляется запись о ней в списке эпик задачи
         } else if (subtasks.containsKey(id)) {
             for (int i = 0; i < epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().size(); i++) {
-                if (epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().get(i) == id) {
+                if (epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().get(i).getId() == id) {
                     epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().remove(i);
                 }
             }
@@ -160,12 +165,8 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Подзадач пока нет");
         } else {
             System.out.println("Поиск подзадач для эпик задачи с ID " + id);
-            for (int num : epics.get(id).getSubtaskIds()) {
-                if (epics.get(id).getSubtaskIds().isEmpty()) {
-                    System.out.println("У данной эпик задачи пока нет подзадач");
-                } else {
-                    System.out.println("Найдена подзадача ID " + num);
-                }
+            for (Task task : epics.get(id).getSubtaskIds()) {
+                System.out.println("Найдена подзадача ID " + task.getId());
             }
         }
     }
@@ -177,13 +178,13 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<Status> subTaskStatusNew = new ArrayList<>();
         ArrayList<Status> subTaskStatusInProgress = new ArrayList<>();
         ArrayList<Status> subTaskStatusDone = new ArrayList<>();
-        for (int num : epics.get(id).getSubtaskIds()) {
-            if (subtasks.get(num).getStatus() == Status.NEW) {
-                subTaskStatusNew.add(subtasks.get(num).getStatus());
-            } else if (subtasks.get(num).getStatus() == Status.IN_PROGRESS) {
-                subTaskStatusInProgress.add(subtasks.get(num).getStatus());
-            } else if (subtasks.get(num).getStatus() == Status.DONE) {
-                subTaskStatusDone.add(subtasks.get(num).getStatus());
+        for (Task task : epics.get(id).getSubtaskIds()) {
+            if (task.getStatus() == Status.NEW) {
+                subTaskStatusNew.add(task.getStatus());
+            } else if (task.getStatus() == Status.IN_PROGRESS) {
+                subTaskStatusInProgress.add(task.getStatus());
+            } else if (task.getStatus() == Status.DONE) {
+                subTaskStatusDone.add(task.getStatus());
             }
         }
         if (subTaskStatusNew.isEmpty() && subTaskStatusInProgress.isEmpty()) {

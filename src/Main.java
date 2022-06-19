@@ -1,3 +1,9 @@
+import Managers.Managers;
+import Managers.TaskManager;
+import Managers.InMemoryTaskManager;
+import Tasks.Epic;
+import Tasks.Subtask;
+import Tasks.Task;
 import java.util.Scanner;
 
 public class Main {
@@ -38,7 +44,7 @@ public class Main {
                     System.out.println("Введите описание задачи");
                     String subDescription = scanner.nextLine();
                     subtask.setDescription(subDescription);
-                    taskManager.addSubTask(subtask);
+                    taskManager.addSubtask(subtask);
                     break;
                 case("4"):
                     System.out.println("Введите ID");
