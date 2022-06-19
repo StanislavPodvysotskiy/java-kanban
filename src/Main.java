@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = new InMemoryTaskManager();
 
         while(true) {
             Scanner scanner = new Scanner((System.in));
@@ -73,6 +73,9 @@ public class Main {
                 case("10"):
                     taskManager.removeAllTasks();
                     break;
+                case("11"):
+                    System.out.println(Managers.getDefaultHistory().getHistory());
+                    break;
                 case("0"):
                     System.out.println("Выход");
                     return;
@@ -94,6 +97,7 @@ public class Main {
         System.out.println("8. Изменить статус задачи");
         System.out.println("9. Удалить задачу");
         System.out.println("10. Удалить все задачи");
+        System.out.println("11. История вызова задач");
         System.out.println("0. Выход");
     }
 

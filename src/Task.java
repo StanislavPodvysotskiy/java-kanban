@@ -3,7 +3,7 @@ public class Task {
     private final String name;
     private String description;
     private int id;
-    private String status = "New";
+    private Status status = Status.NEW;
 
     public Task(String name) {
         this.name = name;
@@ -21,12 +21,12 @@ public class Task {
         return id;
     }
 
-    public String setStatus(String status) {
+    public Status setStatus(Status status) {
         this.status = status;
         return status;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
@@ -36,6 +36,11 @@ public class Task {
 
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public String toString() {
+        return "ID " + id + " Название " + name + "\n";
     }
 
 }
