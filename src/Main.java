@@ -1,9 +1,9 @@
-import Managers.Managers;
-import Managers.TaskManager;
-import Managers.InMemoryTaskManager;
-import Tasks.Epic;
-import Tasks.Subtask;
-import Tasks.Task;
+import managers.Managers;
+import managers.TaskManager;
+import managers.InMemoryTaskManager;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
 import java.util.Scanner;
 
 public class Main {
@@ -49,7 +49,7 @@ public class Main {
                 case("4"):
                     System.out.println("Введите ID");
                     int taskId = scanner.nextInt();
-                    System.out.println(taskManager.getById(taskId));
+                    taskManager.getById(taskId);
                     break;
                 case("5"):
                     System.out.println("Введите ID");

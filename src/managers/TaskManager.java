@@ -1,8 +1,8 @@
-package Managers;
-import Tasks.Epic;
-import Tasks.Status;
-import Tasks.Subtask;
-import Tasks.Task;
+package managers;
+import tasks.Epic;
+import tasks.Status;
+import tasks.Subtask;
+import tasks.Task;
 
 public interface TaskManager {
 
@@ -12,7 +12,7 @@ public interface TaskManager {
 
     void addSubtask(Subtask task);
 
-    String getById(int id);
+    void getById(int id);
 
     void showAllTasks();
 
