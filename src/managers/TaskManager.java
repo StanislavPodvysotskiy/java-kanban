@@ -12,7 +12,11 @@ public interface TaskManager {
 
     void addSubtask(Subtask task);
 
-    void getById(int id);
+    String getTaskById(int id);
+
+    String getEpicById(int id);
+
+    String getSubtaskById(int id);
 
     void showAllTasks();
 
@@ -21,6 +25,10 @@ public interface TaskManager {
     String setStatusById(int id, String status);
 
     void removeTaskById(int id);
+
+    void removeEpicById(int id);
+
+    void removeSubtaskById(int id);
 
     void removeAllTasks();
 

@@ -1,9 +1,9 @@
 package tasks;
-
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    //список хранит ID всех подзадач для эпика
+
+    //список хранит подзадачи для эпика
     private final ArrayList<Subtask> subtaskIds = new ArrayList<>();
 
     public Epic(String name) {

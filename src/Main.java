@@ -47,9 +47,24 @@ public class Main {
                     taskManager.addSubtask(subtask);
                     break;
                 case("4"):
+                    System.out.println("Выберите: 1. Задача 2. Эпик задача 3. Подзадача");
+                    int taskType = scanner.nextInt();
                     System.out.println("Введите ID");
                     int taskId = scanner.nextInt();
-                    taskManager.getById(taskId);
+                    switch (taskType) {
+                        case (1):
+                            System.out.println(taskManager.getTaskById(taskId));
+                            break;
+                        case (2):
+                            System.out.println(taskManager.getEpicById(taskId));
+                            break;
+                        case (3):
+                            System.out.println(taskManager.getSubtaskById(taskId));
+                            break;
+                        default:
+                            System.out.println("Неверное значение");
+                            break;
+                    }
                     break;
                 case("5"):
                     System.out.println("Введите ID");
@@ -72,9 +87,24 @@ public class Main {
                     System.out.println(taskManager.setStatusById(idForStatusChange, newStatus));
                     break;
                 case("9"):
+                    System.out.println("Выберите: 1. Задача 2. Эпик задача 3. Подзадача");
+                    int taskTypeRemove = scanner.nextInt();
                     System.out.println("Укажите ID");
                     int idForRemove = scanner.nextInt();
-                    taskManager.removeTaskById(idForRemove);
+                    switch (taskTypeRemove) {
+                        case (1):
+                            taskManager.removeTaskById(idForRemove);
+                            break;
+                        case (2):
+                            taskManager.removeEpicById(idForRemove);
+                            break;
+                        case (3):
+                            taskManager.removeSubtaskById(idForRemove);
+                            break;
+                        default:
+                            System.out.println("Неверное значение");
+                            break;
+                    }
                     break;
                 case("10"):
                     taskManager.removeAllTasks();

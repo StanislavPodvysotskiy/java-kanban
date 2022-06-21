@@ -11,7 +11,6 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
 
     //метод добавляет новую задачу в хэшмап
     @Override
@@ -44,26 +43,38 @@ public class InMemoryTaskManager implements TaskManager {
 
     //метод возвращает название и описание задачи
     @Override
-    public void getById(int id) {
-        if (!tasks.containsKey(id) && !epics.containsKey(id) && !subtasks.containsKey(id)) {
-            System.out.println("Такой задачи нет");
-        } else {
-            if (tasks.containsKey(id)) {
-                System.out.println("Задача: " + tasks.get(id).getName() + " Описание: "
-                        + tasks.get(id).getDescription());
-                inMemoryHistoryManager.add(tasks.get(id));
-            }
-            if (epics.containsKey(id)) {
-                System.out.println("Эпик задача: " + epics.get(id).getName() + " Описание: "
-                        + epics.get(id).getDescription());
-                inMemoryHistoryManager.add(epics.get(id));
-            }
-            if (subtasks.containsKey(id)) {
-                System.out.println("Подзадача: " + subtasks.get(id).getName() + " Описание: "
-                        + subtasks.get(id).getDescription());
-                inMemoryHistoryManager.add(subtasks.get(id));
-            }
+    public String getTaskById(int id) {
+        String nameAndDescription = "Такой задачи нет";
+        if (tasks.containsKey(id)) {
+            nameAndDescription = "Задача: " + tasks.get(id).getName() + " Описание: "
+                    + tasks.get(id).getDescription();
+            Managers.getDefaultHistory().add(tasks.get(id));
         }
+        return nameAndDescription;
+    }
+
+    //метод возвращает название и описание эпик задачи
+    @Override
+    public String getEpicById(int id) {
+        String nameAndDescription = "Такой эпик задачи нет";
+        if (epics.containsKey(id)) {
+            nameAndDescription = "Эпик задача: " + epics.get(id).getName() + " Описание: "
+                    + epics.get(id).getDescription();
+            Managers.getDefaultHistory().add(epics.get(id));
+        }
+        return nameAndDescription;
+    }
+
+    //метод возвращает название и описание подзадачи
+    @Override
+    public String getSubtaskById(int id) {
+        String nameAndDescription = "Такой подзадачи нет";
+        if (subtasks.containsKey(id)) {
+            nameAndDescription = "Подзадача: " + subtasks.get(id).getName() + " Описание: "
+                    + subtasks.get(id).getDescription();
+            Managers.getDefaultHistory().add(subtasks.get(id));
+        }
+        return nameAndDescription;
     }
 
     //метод проходит циклами по всем хэшмапа, если в них есть объекты и отображает их
@@ -98,7 +109,7 @@ public class InMemoryTaskManager implements TaskManager {
             statusDescription = tasks.get(id).getStatus().toString();
         } else if (epics.containsKey(id)) {
             statusDescription = getEpicStatus(id).toString();
-        } else  if (subtasks.containsKey(id)) {
+        } else if (subtasks.containsKey(id)) {
             statusDescription = subtasks.get(id).getStatus().toString();
         }
         return statusDescription;
@@ -125,31 +136,42 @@ public class InMemoryTaskManager implements TaskManager {
     //метод удаляет задачи
     @Override
     public void removeTaskById(int id) {
-        if (!tasks.containsKey(id) && !epics.containsKey(id) && !subtasks.containsKey(id)) {
-            System.out.println("Такой задачи нет");
+        if (tasks.containsKey(id)) {
+            tasks.remove(id);
+            System.out.println("Задача удалена");
         } else {
-            if (tasks.containsKey(id)) {
-                tasks.remove(id);
-                System.out.println("Задача удалена");
-                //при удалении эпик задачи удаляются все его подзадачи
+            System.out.println("Такой задачи нет");
+        }
+    }
+
+    //метод удаляет эпик задачи
+    //при удалении эпик задачи удаляются все его подзадачи
+    @Override
+    public void removeEpicById(int id) {
+        if (epics.containsKey(id)) {
+            for (Subtask subTasksId : epics.get(id).getSubtaskIds()) {
+                subtasks.remove(subTasksId.getId());
             }
-            if (epics.containsKey(id)) {
-                for (Subtask subTasksId : epics.get(id).getSubtaskIds()) {
-                    subtasks.remove(subTasksId.getId());
+            epics.remove(id);
+            System.out.println("Эпик задача удалена");
+        } else {
+            System.out.println("Такой эпик задачи нет");
+        }
+    }
+
+    //метод удаляет задачи
+    @Override
+    public void removeSubtaskById(int id) {
+        if (subtasks.containsKey(id)) {
+            for (int i = 0; i < epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().size(); i++) {
+                if (epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().get(i).getId() == id) {
+                    epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().remove(i);
                 }
-                epics.remove(id);
-                System.out.println("Эпик задача удалена");
-                //при удалении подзадачи удаляется запись о ней в списке эпик задачи
             }
-            if (subtasks.containsKey(id)) {
-                for (int i = 0; i < epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().size(); i++) {
-                    if (epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().get(i).getId() == id) {
-                        epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().remove(i);
-                    }
-                }
-                subtasks.remove(id);
-                System.out.println("Подзадача удалена");
-            }
+            subtasks.remove(id);
+            System.out.println("Подзадача удалена");
+        } else {
+            System.out.println("Такой подзадачи нет");
         }
     }
 
