@@ -43,38 +43,29 @@ public class InMemoryTaskManager implements TaskManager {
 
     //метод возвращает название и описание задачи
     @Override
-    public String getTaskById(int id) {
-        String nameAndDescription = "Такой задачи нет";
+    public Task getTaskById(int id) {
         if (tasks.containsKey(id)) {
-            nameAndDescription = "Задача: " + tasks.get(id).getName() + " Описание: "
-                    + tasks.get(id).getDescription();
-            Managers.getDefaultHistory().add(tasks.get(id));
+            return tasks.get(id);
         }
-        return nameAndDescription;
+        return null;
     }
 
     //метод возвращает название и описание эпик задачи
     @Override
-    public String getEpicById(int id) {
-        String nameAndDescription = "Такой эпик задачи нет";
+    public Epic getEpicById(int id) {
         if (epics.containsKey(id)) {
-            nameAndDescription = "Эпик задача: " + epics.get(id).getName() + " Описание: "
-                    + epics.get(id).getDescription();
-            Managers.getDefaultHistory().add(epics.get(id));
+            return epics.get(id);
         }
-        return nameAndDescription;
+        return null;
     }
 
     //метод возвращает название и описание подзадачи
     @Override
-    public String getSubtaskById(int id) {
-        String nameAndDescription = "Такой подзадачи нет";
+    public Subtask getSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
-            nameAndDescription = "Подзадача: " + subtasks.get(id).getName() + " Описание: "
-                    + subtasks.get(id).getDescription();
-            Managers.getDefaultHistory().add(subtasks.get(id));
+            return subtasks.get(id);
         }
-        return nameAndDescription;
+        return null;
     }
 
     //метод проходит циклами по всем хэшмапа, если в них есть объекты и отображает их
@@ -149,7 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeEpicById(int id) {
         if (epics.containsKey(id)) {
-            for (Subtask subTasksId : epics.get(id).getSubtaskIds()) {
+            for (Subtask subTasksId : epics.get(id).getSubtasks()) {
                 subtasks.remove(subTasksId.getId());
             }
             epics.remove(id);
@@ -163,9 +154,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
-            for (int i = 0; i < epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().size(); i++) {
-                if (epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().get(i).getId() == id) {
-                    epics.get(subtasks.get(id).getEpicId()).getSubtaskIds().remove(i);
+            for (int i = 0; i < epics.get(subtasks.get(id).getEpicId()).getSubtasks().size(); i++) {
+                if (epics.get(subtasks.get(id).getEpicId()).getSubtasks().get(i).getId() == id) {
+                    epics.get(subtasks.get(id).getEpicId()).getSubtasks().remove(i);
                 }
             }
             subtasks.remove(id);
@@ -193,11 +184,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void getEpicSubtasks(int id) {
         if (!epics.containsKey(id)) {
             System.out.println("Такой эпик задачи нет");
-        } else if (epics.get(id).getSubtaskIds().isEmpty()) {
+        } else if (epics.get(id).getSubtasks().isEmpty()) {
             System.out.println("Подзадач пока нет");
         } else {
             System.out.println("Поиск подзадач для эпик задачи с ID " + id);
-            for (Task task : epics.get(id).getSubtaskIds()) {
+            for (Task task : epics.get(id).getSubtasks()) {
                 System.out.println("Найдена подзадача ID " + task.getId());
             }
         }
@@ -210,7 +201,7 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<Status> subTaskStatusNew = new ArrayList<>();
         ArrayList<Status> subTaskStatusInProgress = new ArrayList<>();
         ArrayList<Status> subTaskStatusDone = new ArrayList<>();
-        for (Task task : epics.get(id).getSubtaskIds()) {
+        for (Task task : epics.get(id).getSubtasks()) {
             if (task.getStatus() == Status.NEW) {
                 subTaskStatusNew.add(task.getStatus());
             } else if (task.getStatus() == Status.IN_PROGRESS) {

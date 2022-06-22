@@ -12,11 +12,11 @@ public interface TaskManager {
 
     void addSubtask(Subtask task);
 
-    String getTaskById(int id);
+    Task getTaskById(int id);
 
-    String getEpicById(int id);
+    Epic getEpicById(int id);
 
-    String getSubtaskById(int id);
+    Subtask getSubtaskById(int id);
 
     void showAllTasks();
 
