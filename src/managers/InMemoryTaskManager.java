@@ -45,6 +45,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         if (tasks.containsKey(id)) {
+            Managers.getDefaultHistory().add(tasks.get(id));
             return tasks.get(id);
         }
         return null;
@@ -54,6 +55,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         if (epics.containsKey(id)) {
+            Managers.getDefaultHistory().add(epics.get(id));
             return epics.get(id);
         }
         return null;
@@ -63,6 +65,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
+            Managers.getDefaultHistory().add(subtasks.get(id));
             return subtasks.get(id);
         }
         return null;
@@ -129,6 +132,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeTaskById(int id) {
         if (tasks.containsKey(id)) {
             tasks.remove(id);
+            Managers.getDefaultHistory().remove(id);
             System.out.println("Задача удалена");
         } else {
             System.out.println("Такой задачи нет");
@@ -142,8 +146,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (epics.containsKey(id)) {
             for (Subtask subTasksId : epics.get(id).getSubtasks()) {
                 subtasks.remove(subTasksId.getId());
+                Managers.getDefaultHistory().remove(subTasksId.getId());
             }
             epics.remove(id);
+            Managers.getDefaultHistory().remove(id);
             System.out.println("Эпик задача удалена");
         } else {
             System.out.println("Такой эпик задачи нет");
@@ -160,6 +166,7 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
             subtasks.remove(id);
+            Managers.getDefaultHistory().remove(id);
             System.out.println("Подзадача удалена");
         } else {
             System.out.println("Такой подзадачи нет");
