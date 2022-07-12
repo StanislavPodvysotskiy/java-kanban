@@ -1,6 +1,4 @@
-import managers.Managers;
-import managers.TaskManager;
-import managers.InMemoryTaskManager;
+import managers.*;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -8,7 +6,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager taskManager = new InMemoryTaskManager();
+        TaskManager taskManager = Managers.getDefault();
 
         while(true) {
             Scanner scanner = new Scanner((System.in));
@@ -110,7 +108,7 @@ public class Main {
                     taskManager.removeAllTasks();
                     break;
                 case("11"):
-                    System.out.println(Managers.getDefaultHistory().getHistory());
+                    System.out.println(taskManager.getHistoryManager().getHistory());
                     break;
                 case("0"):
                     System.out.println("Выход");
