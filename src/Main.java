@@ -1,138 +1,55 @@
-import managers.*;
+import managers.Managers;
+import managers.TaskManager;
 import tasks.Epic;
 import tasks.Subtask;
-import tasks.Task;
-import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
 
-        while(true) {
-            Scanner scanner = new Scanner((System.in));
-            System.out.println("Выберите действие");
-            menu();
-            String choice = scanner.nextLine();
-            switch (choice) {
-                case("1"):
-                    System.out.println("Введите название задачи");
-                    String taskName = scanner.nextLine();
-                    Task task = new Task(taskName);
-                    System.out.println("Введите описание задачи");
-                    String taskDescription = scanner.nextLine();
-                    task.setDescription(taskDescription);
-                    taskManager.addTask(task);
-                    break;
-                case("2"):
-                    System.out.println("Введите название задачи");
-                    String epicName = scanner.nextLine();
-                    Epic epic = new Epic(epicName);
-                    System.out.println("Введите описание задачи");
-                    String epicDescription = scanner.nextLine();
-                    epic.setDescription(epicDescription);
-                    taskManager.addEpicTask(epic);
-                    break;
-                case("3"):
-                    System.out.println("Введите ID эпик задачи");
-                    int epicId = scanner.nextInt();
-                    System.out.println("Введите название задачи");
-                    String fix = scanner.nextLine(); //доп сканер лови \n от предыдущего сканера
-                    String subtaskName = scanner.nextLine();
-                    Subtask subtask = new Subtask(subtaskName, epicId);
-                    System.out.println("Введите описание задачи");
-                    String subDescription = scanner.nextLine();
-                    subtask.setDescription(subDescription);
-                    taskManager.addSubtask(subtask);
-                    break;
-                case("4"):
-                    System.out.println("Выберите: 1. Задача 2. Эпик задача 3. Подзадача");
-                    int taskType = scanner.nextInt();
-                    System.out.println("Введите ID");
-                    int taskId = scanner.nextInt();
-                    switch (taskType) {
-                        case (1):
-                            System.out.println(taskManager.getTaskById(taskId));
-                            break;
-                        case (2):
-                            System.out.println(taskManager.getEpicById(taskId));
-                            break;
-                        case (3):
-                            System.out.println(taskManager.getSubtaskById(taskId));
-                            break;
-                        default:
-                            System.out.println("Неверное значение");
-                            break;
-                    }
-                    break;
-                case("5"):
-                    System.out.println("Введите ID");
-                    int subtasksId = scanner.nextInt();
-                    taskManager.getEpicSubtasks(subtasksId);
-                    break;
-                case("6"):
-                    taskManager.showAllTasks();
-                    break;
-                case("7"):
-                    System.out.println("Введите ID");
-                    int idForStatusShow = scanner.nextInt();
-                    System.out.println(taskManager.getStatusById(idForStatusShow));
-                    break;
-                case("8"):
-                    System.out.println("Введите ID");
-                    int idForStatusChange = scanner.nextInt();
-                    System.out.println("Укажите статус IN_PROGRESS или DONE");
-                    String newStatus = scanner.next();
-                    System.out.println(taskManager.setStatusById(idForStatusChange, newStatus));
-                    break;
-                case("9"):
-                    System.out.println("Выберите: 1. Задача 2. Эпик задача 3. Подзадача");
-                    int taskTypeRemove = scanner.nextInt();
-                    System.out.println("Укажите ID");
-                    int idForRemove = scanner.nextInt();
-                    switch (taskTypeRemove) {
-                        case (1):
-                            taskManager.removeTaskById(idForRemove);
-                            break;
-                        case (2):
-                            taskManager.removeEpicById(idForRemove);
-                            break;
-                        case (3):
-                            taskManager.removeSubtaskById(idForRemove);
-                            break;
-                        default:
-                            System.out.println("Неверное значение");
-                            break;
-                    }
-                    break;
-                case("10"):
-                    taskManager.removeAllTasks();
-                    break;
-                case("11"):
-                    System.out.println(taskManager.getHistoryManager().getHistory());
-                    break;
-                case("0"):
-                    System.out.println("Выход");
-                    return;
-                default:
-                    System.out.println("Такой команды нет");
-                    break;
-            }
-        }
-    }
+        Epic epic1 = new Epic("E1");
+        epic1.setDescription("эпик 1");
+        taskManager.addEpicTask(epic1);
 
-    public static void menu() {
-        System.out.println("1. Создать новую задачу");
-        System.out.println("2. Создать новую Эпик задачу");
-        System.out.println("3. Создать новую подзадачу");
-        System.out.println("4. Показать задачу");
-        System.out.println("5. Показать подзадачи эпик задачи");
-        System.out.println("6. Показать все задачи");
-        System.out.println("7. Показать статус задачи");
-        System.out.println("8. Изменить статус задачи");
-        System.out.println("9. Удалить задачу");
-        System.out.println("10. Удалить все задачи");
-        System.out.println("11. История вызова задач");
-        System.out.println("0. Выход");
+        Epic epic2 = new Epic("E2");
+        epic2.setDescription("эпик 2");
+        taskManager.addEpicTask(epic2);
+
+        Subtask subtask1 = new Subtask("S1", epic1.getId());
+        subtask1.setDescription("сабтаск 1");
+        taskManager.addSubtask(subtask1);
+
+        Subtask subtask2 = new Subtask("S2", epic1.getId());
+        subtask2.setDescription("сабтаск 2");
+        taskManager.addSubtask(subtask2);
+
+        Subtask subtask3 = new Subtask("S3", epic1.getId());
+        subtask3.setDescription("сабтаск 3");
+        taskManager.addSubtask(subtask3);
+
+        taskManager.getEpicById(epic1.getId());
+        taskManager.getEpicById(epic2.getId());
+        taskManager.getSubtaskById(subtask1.getId());
+        taskManager.getSubtaskById(subtask2.getId());
+        taskManager.getSubtaskById(subtask3.getId());
+
+        System.out.println(taskManager.getHistoryManager().getHistory());
+
+        taskManager.getEpicById(epic2.getId());
+        taskManager.getSubtaskById(subtask2.getId());
+        taskManager.getSubtaskById(subtask1.getId());
+        taskManager.getEpicById(epic1.getId());
+
+        System.out.println(taskManager.getHistoryManager().getHistory());
+
+        taskManager.removeSubtaskById(subtask2.getId());
+
+        System.out.println(taskManager.getHistoryManager().getHistory());
+
+        taskManager.removeEpicById(epic1.getId());
+
+        System.out.println(taskManager.getHistoryManager().getHistory());
+
     }
 
 }
