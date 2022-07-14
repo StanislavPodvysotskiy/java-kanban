@@ -5,6 +5,7 @@ import tasks.Subtask;
 import tasks.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
     private int lastId = 1;
@@ -79,18 +80,18 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Задач пока нет");
         } else {
             if (!tasks.isEmpty()) {
-                for (Integer task : tasks.keySet()) {
-                    System.out.println("ID " + task + " Название " + tasks.get(task).getName());
+                for (Map.Entry<Integer, Task> task : tasks.entrySet()) {
+                    System.out.println("ID " + task.getKey() + " Название " + task.getValue().getName());
                 }
             }
             if (!epics.isEmpty()) {
-                for (Integer epicTask : epics.keySet()) {
-                    System.out.println("ID " + epicTask + " Название " + epics.get(epicTask).getName());
+                for (Map.Entry<Integer, Epic> epicTask : epics.entrySet()) {
+                    System.out.println("ID " + epicTask.getKey() + " Название " + epicTask.getValue().getName());
                 }
             }
             if (!subtasks.isEmpty()) {
-                for (Integer subTask : subtasks.keySet()) {
-                    System.out.println("ID " + subTask + " Название " + subtasks.get(subTask).getName());
+                for (Map.Entry<Integer, Subtask> subtask : subtasks.entrySet()) {
+                    System.out.println("ID " + subtask.getKey() + " Название " + subtask.getValue().getName());
                 }
             }
         }
@@ -183,6 +184,7 @@ public class InMemoryTaskManager implements TaskManager {
             tasks.clear();
             epics.clear();
             subtasks.clear();
+            historyManager.clearHistory();
             System.out.println("Все задачи удалены");
         }
     }
@@ -197,6 +199,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             System.out.println("Поиск подзадач для эпик задачи с ID " + id);
             for (Task task : epics.get(id).getSubtasks()) {
+                historyManager.add(task);
                 System.out.println("Найдена подзадача ID " + task.getId());
             }
         }

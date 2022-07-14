@@ -4,6 +4,8 @@ import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
+    private Node<Task> head;
+    private Node<Task> tail;
     private final LinkedList<Task> tasksHistory = new LinkedList<>();
     private final Map<Integer, Node<Task>> nodeMap = new HashMap<>();
 
@@ -31,8 +33,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         nodeMap.remove(id);
     }
 
-    private Node<Task> head;
-    private Node<Task> tail;
+    public void clearHistory() {
+        tasksHistory.clear();
+        nodeMap.clear();
+    }
 
     public void linkLast(Task task) {
         final Node<Task> oldTail = tail;
