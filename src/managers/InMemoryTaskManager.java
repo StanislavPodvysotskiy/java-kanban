@@ -9,15 +9,20 @@ import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
     private int lastId = 1;
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected final HashMap<Integer, Task> tasks = new HashMap<>();
+    protected final HashMap<Integer, Epic> epics = new HashMap<>();
+    protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     HistoryManager historyManager = Managers.getDefaultHistory();
 
     //метод добавляет новую задачу в хэшмап
     @Override
     public void addTask(Task task) {
-        task.setId(lastId++);
+        if (task.getId() == -1) {
+            while (tasks.containsKey(lastId) || epics.containsKey(lastId) || subtasks.containsKey(lastId)) {
+                lastId++;
+            }
+            task.setId(lastId++);
+        }
         tasks.put(task.getId(), task);
         System.out.println("Задача создана");
     }
@@ -25,7 +30,12 @@ public class InMemoryTaskManager implements TaskManager {
     //метод добавляет новую зпик задачу в хэшмап
     @Override
     public void addEpicTask(Epic task) {
-        task.setId(lastId++);
+        if (task.getId() == -1) {
+            while (tasks.containsKey(lastId) || epics.containsKey(lastId) || subtasks.containsKey(lastId)) {
+                lastId++;
+            }
+            task.setId(lastId++);
+        }
         epics.put(task.getId(), task);
         System.out.println("Задача создана");
     }
@@ -34,7 +44,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addSubtask(Subtask task) {
         if (epics.containsKey(task.getEpicId())) {
-            task.setId(lastId++);
+            if (task.getId() == -1) {
+                while (tasks.containsKey(lastId) || epics.containsKey(lastId) || subtasks.containsKey(lastId)) {
+                    lastId++;
+                }
+                task.setId(lastId++);
+            }
             epics.get(task.getEpicId()).addSubtask(task);
             subtasks.put(task.getId(), task);
             System.out.println("Задача создана");

@@ -4,11 +4,13 @@ public class Task {
 
     private final String name;
     private String description;
-    private int id;
+    private int id = -1;
     private Status status = Status.NEW;
+    protected TaskTypes type;
 
     public Task(String name) {
         this.name = name;
+        this.type = TaskTypes.TASK;
     }
 
     public String getName() {
@@ -38,6 +40,14 @@ public class Task {
 
     public String getDescription() {
         return description;
+    }
+
+    public TaskTypes getType() {
+        return type;
+    }
+
+    public void setType(TaskTypes type) {
+        this.type = type;
     }
 
     @Override

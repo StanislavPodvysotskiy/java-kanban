@@ -8,6 +8,7 @@ public class Epic extends Task {
 
     public Epic(String name) {
         super(name);
+        super.type = TaskTypes.EPIC;
     }
 
     public void addSubtask(Subtask subtask) {
