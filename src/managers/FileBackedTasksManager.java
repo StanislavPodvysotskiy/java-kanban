@@ -8,15 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final String path;
-    private String stringToWrite;
-    private String fileHead;
-    private boolean isFirst = true;
+    private String dataWriteToFile; //в поле хранятся данные для записи
+    private String fileHead; //поле передается заголовок файла
+    private boolean isFirst = true; //поле определяет записывать заголовок в файл или нет
 
     public FileBackedTasksManager(String path) {
         this.path = path;
@@ -31,6 +29,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return path;
     }
 
+    //метод сохраняет в файл данные, при первом сохранении происходит запись заголовка
+    //далее в файл дописываются задачи и история просмотров
+    //по условию данный метод должен быть без параметров
     public void save() throws ManagerSaveException {
         if (isFirst) {
             try (FileWriter fileWriter = new FileWriter(path)) {
@@ -43,7 +44,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
         }
         try (FileWriter fileWriter = new FileWriter(path, true)) {
-            fileWriter.write(stringToWrite);
+            fileWriter.write(dataWriteToFile);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } catch (ManagerSaveException e) {
@@ -51,6 +52,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
+    //метод приобразует задачу в строку
     public String toString(Task task) {
         return task.getId() + "," +
                 task.getType() + "," +
@@ -59,6 +61,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 task.getDescription() + "\r\n";
     }
 
+    //метод приобразует эпик задачу в строку
     public String toString(Epic epic) {
         return epic.getId() + "," +
                 epic.getType() + "," +
@@ -67,6 +70,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 epic.getDescription() + "\r\n";
     }
 
+    //метод приобразует подзадачу в строку
     public String toString(Subtask subtask) {
         return subtask.getId() + "," +
                 subtask.getType() + "," +
@@ -76,6 +80,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 subtask.getEpicId() + "\r\n";
     }
 
+    //метод записывает пустую строку, далее получает из списка задачи,
+    //далее из задач получает их ID и добавляет в строку
+    //получаем пустую строку и последовательность ID соответствующую истории вызовов задач
     public static String toString(HistoryManager manager) {
         StringBuilder history = new StringBuilder();
         history.append(" " + "\r\n");
@@ -90,8 +97,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return history.toString();
     }
 
+    //метод историю в виде строки и передает ее для записи в файл
     public void writeHistory(String history) {
-        stringToWrite = history;
+        dataWriteToFile = history;
         try {
             save();
         } catch (ManagerSaveException e) {
@@ -99,6 +107,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
+    //метод получает в качестве параметра строку с содержимым файла
+    //разбиваем строку и получаем отдельные задачи и историю
+    //проверяем у каждой задачи поле Type, в зависимости от значения поля передаем строку в нужный метод
+    //продолжаем повторять до тех пор пока не найдем пустую строку, за ней будет история просмотров
+    //выделяем строку с историей и преобразуем ее в список ID задач
+    //передаем список в метод востанавливающий историю просмотров задач
     public void readLines(String data) {
         String[] lines = data.split("\r?\n");
         fileHead = lines[0] + "\r\n";
@@ -130,6 +144,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
+    //метод приобразует строку в экземпляр объекта Task
     public Task fromString(String value) {
         String[] taskLine = value.split(",");
         Task task = new Task(taskLine[2]);
@@ -140,6 +155,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return task;
     }
 
+    //метод приобразует строку в экземпляр объекта Epic
     public Epic epicFromString(String value) {
         String[] taskLine = value.split(",");
         Epic epic = new Epic(taskLine[2]);
@@ -150,6 +166,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return epic;
     }
 
+    //метод приобразует строку в экземпляр объекта Subtask
     public Subtask subtaskFromString(String value) {
         String[] taskLine = value.split(",");
         Subtask subtask = new Subtask(taskLine[2], Integer.parseInt(taskLine[5]));
@@ -160,6 +177,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return subtask;
     }
 
+    //метод преобразует строку с ID в список с ID
     public static List<Integer> historyFromString(String value) {
         List<Integer> ids = new ArrayList<>();
         String[] idLine = value.split(",");
@@ -169,6 +187,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return ids;
     }
 
+    //метод востанавливает историю просмотров
+    //для восстановления просмотра используется вызов родительского метода,
+    //в котором реализована логика добавления в историю
     public void restoreHistory(List<Integer> tasksIds) {
         for (int id : tasksIds) {
             if (super.tasks.containsKey(id)) {
@@ -183,6 +204,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
+    //метод считывает файл и преобразует его в строку
     private String readFile(String path) {
         try {
             return Files.readString(Path.of(path));
@@ -192,10 +214,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
+    //метод выполняет подительский метод, и сохраняет в переменную данные о задаче для записи в файл
     @Override
     public void addTask(Task task) {
         super.addTask(task);
-        stringToWrite = toString(task);
+        dataWriteToFile = toString(task);
         try {
             save();
         } catch (ManagerSaveException e) {
@@ -203,10 +226,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
+    //метод выполняет подительский метод, и сохраняет в переменную данные об эпик задаче для записи в файл
     @Override
     public void addEpicTask(Epic task) {
         super.addEpicTask(task);
-        stringToWrite = toString(task);
+        dataWriteToFile = toString(task);
         try {
             save();
         } catch (ManagerSaveException e) {
@@ -214,45 +238,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
+    //метод выполняет подительский метод, и сохраняет в переменную данные о подзадаче для записи в файл
     @Override
     public void addSubtask(Subtask task) {
         super.addSubtask(task);
-        stringToWrite = toString(task);
+        dataWriteToFile = toString(task);
         try {
             save();
         } catch (ManagerSaveException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public Task getTaskById(int id) {
-        if (tasks.containsKey(id)) {
-            historyManager.add(tasks.get(id));
-            stringToWrite = toString(tasks.get(id));
-            return tasks.get(id);
-        }
-        return null;
-    }
-
-    @Override
-    public Epic getEpicById(int id) {
-        if (epics.containsKey(id)) {
-            historyManager.add(epics.get(id));
-            stringToWrite = toString(epics.get(id));
-            return epics.get(id);
-        }
-        return null;
-    }
-
-    @Override
-    public Subtask getSubtaskById(int id) {
-        if (subtasks.containsKey(id)) {
-            historyManager.add(subtasks.get(id));
-            stringToWrite = toString(subtasks.get(id));
-            return subtasks.get(id);
-        }
-        return null;
     }
 
     public static void main(String[] args) {
