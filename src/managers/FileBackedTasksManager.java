@@ -12,9 +12,7 @@ import java.util.List;
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final String path;
-    private String dataWriteToFile; //в поле хранятся данные для записи
-    private String fileHead; //поле передается заголовок файла
-    private boolean isFirst = true; //поле определяет записывать заголовок в файл или нет
+    private String dataToWriteToFile; //в поле хранятся данные для записи
 
     public FileBackedTasksManager(String path) {
         this.path = path;
@@ -29,22 +27,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return path;
     }
 
-    //метод сохраняет в файл данные, при первом сохранении происходит запись заголовка
+    //метод стирает содержимое файла и записывает заголовок
+    private void writeHead() {
+        try (FileWriter fileWriter = new FileWriter(path)) {
+            fileWriter.write("id,type,name,status,description,epic\r\n");
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    //метод сохраняет данные в конец файла
     //далее в файл дописываются задачи и история просмотров
     //по условию данный метод должен быть без параметров
-    public void save() throws ManagerSaveException {
-        if (isFirst) {
-            try (FileWriter fileWriter = new FileWriter(path)) {
-                fileWriter.write(fileHead);
-                isFirst = false;
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            } catch (ManagerSaveException e) {
-                System.out.println("Произошла ошибка во время чтения файла.");
-            }
-        }
+    private void save() throws ManagerSaveException {
         try (FileWriter fileWriter = new FileWriter(path, true)) {
-            fileWriter.write(dataWriteToFile);
+            fileWriter.write(dataToWriteToFile);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } catch (ManagerSaveException e) {
@@ -53,7 +50,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     //метод приобразует задачу в строку
-    public String toString(Task task) {
+    private String toString(Task task) {
         return task.getId() + "," +
                 task.getType() + "," +
                 task.getName() + "," +
@@ -62,7 +59,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     //метод приобразует эпик задачу в строку
-    public String toString(Epic epic) {
+    private String toString(Epic epic) {
         return epic.getId() + "," +
                 epic.getType() + "," +
                 epic.getName() + "," +
@@ -71,7 +68,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     //метод приобразует подзадачу в строку
-    public String toString(Subtask subtask) {
+    private String toString(Subtask subtask) {
         return subtask.getId() + "," +
                 subtask.getType() + "," +
                 subtask.getName() + "," +
@@ -83,9 +80,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     //метод записывает пустую строку, далее получает из списка задачи,
     //далее из задач получает их ID и добавляет в строку
     //получаем пустую строку и последовательность ID соответствующую истории вызовов задач
-    public static String toString(HistoryManager manager) {
+    private static String toString(HistoryManager manager) {
         StringBuilder history = new StringBuilder();
-        history.append(" " + "\r\n");
+        history.append("\r\n");
         for (int i = 0; i < manager.getHistory().size(); i++) {
             Task task = manager.getHistory().get(i);
             if (i < manager.getHistory().size() - 1) {
@@ -97,9 +94,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return history.toString();
     }
 
-    //метод историю в виде строки и передает ее для записи в файл
-    public void writeHistory(String history) {
-        dataWriteToFile = history;
+    //метод получает историю в виде строки и передает ее для записи в файл
+    private void writeHistory(String history) {
+        dataToWriteToFile = history;
         try {
             save();
         } catch (ManagerSaveException e) {
@@ -114,8 +111,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     //выделяем строку с историей и преобразуем ее в список ID задач
     //передаем список в метод востанавливающий историю просмотров задач
     public void readLines(String data) {
+        writeHead();
         String[] lines = data.split("\r?\n");
-        fileHead = lines[0] + "\r\n";
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i];
             if (!line.isBlank()) {
@@ -135,7 +132,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         break;
                 }
             } else {
-                if (!lines[i+1].isBlank() && i+1 < lines.length) {
+                if (!lines[i + 1].isBlank() && i + 1 < lines.length) {
                     List<Integer> tasksIds = historyFromString(lines[i + 1]);
                     restoreHistory(tasksIds);
                 }
@@ -145,7 +142,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     //метод приобразует строку в экземпляр объекта Task
-    public Task fromString(String value) {
+    private Task fromString(String value) {
         String[] taskLine = value.split(",");
         Task task = new Task(taskLine[2]);
         task.setId(Integer.parseInt(taskLine[0]));
@@ -156,7 +153,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     //метод приобразует строку в экземпляр объекта Epic
-    public Epic epicFromString(String value) {
+    private Epic epicFromString(String value) {
         String[] taskLine = value.split(",");
         Epic epic = new Epic(taskLine[2]);
         epic.setId(Integer.parseInt(taskLine[0]));
@@ -167,7 +164,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     //метод приобразует строку в экземпляр объекта Subtask
-    public Subtask subtaskFromString(String value) {
+    private Subtask subtaskFromString(String value) {
         String[] taskLine = value.split(",");
         Subtask subtask = new Subtask(taskLine[2], Integer.parseInt(taskLine[5]));
         subtask.setId(Integer.parseInt(taskLine[0]));
@@ -178,7 +175,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     //метод преобразует строку с ID в список с ID
-    public static List<Integer> historyFromString(String value) {
+    private static List<Integer> historyFromString(String value) {
         List<Integer> ids = new ArrayList<>();
         String[] idLine = value.split(",");
         for (String id : idLine) {
@@ -190,7 +187,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     //метод востанавливает историю просмотров
     //для восстановления просмотра используется вызов родительского метода,
     //в котором реализована логика добавления в историю
-    public void restoreHistory(List<Integer> tasksIds) {
+    private void restoreHistory(List<Integer> tasksIds) {
         for (int id : tasksIds) {
             if (super.tasks.containsKey(id)) {
                 super.getTaskById(id);
@@ -218,7 +215,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void addTask(Task task) {
         super.addTask(task);
-        dataWriteToFile = toString(task);
+        dataToWriteToFile = toString(task);
         try {
             save();
         } catch (ManagerSaveException e) {
@@ -230,7 +227,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void addEpicTask(Epic task) {
         super.addEpicTask(task);
-        dataWriteToFile = toString(task);
+        dataToWriteToFile = toString(task);
         try {
             save();
         } catch (ManagerSaveException e) {
@@ -242,7 +239,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void addSubtask(Subtask task) {
         super.addSubtask(task);
-        dataWriteToFile = toString(task);
+        dataToWriteToFile = toString(task);
         try {
             save();
         } catch (ManagerSaveException e) {
