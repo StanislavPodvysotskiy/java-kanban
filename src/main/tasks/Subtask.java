@@ -1,4 +1,4 @@
-package tasks;
+package main.tasks;
 
 public class Subtask extends Task {
 

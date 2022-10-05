@@ -1,6 +1,6 @@
-package managers;
+package main.managers;
 
-import tasks.*;
+import main.tasks.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     //метод стирает содержимое файла и записывает заголовок
     private void writeHead() {
         try (FileWriter fileWriter = new FileWriter(path)) {
-            fileWriter.write("id,type,name,status,description,epic\r\n");
+            fileWriter.write("id,type,name,status,description,epic,datetime,duration\r\n");
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -55,7 +55,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 task.getType() + "," +
                 task.getName() + "," +
                 task.getStatus() + "," +
-                task.getDescription() + "\r\n";
+                task.getDescription() + ",," +
+                task.getStartTime().format(Task.DATE_TIME_FORMATTER) + "," +
+                task.getDuration().toHours() + "\r\n";
     }
 
     //метод приобразует эпик задачу в строку
@@ -64,7 +66,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 epic.getType() + "," +
                 epic.getName() + "," +
                 epic.getStatus() + "," +
-                epic.getDescription() + "\r\n";
+                epic.getDescription() + ",," +
+                epic.getStartTime().format(Task.DATE_TIME_FORMATTER) + "," +
+                epic.getDuration().toHours() + "\r\n";
     }
 
     //метод приобразует подзадачу в строку
@@ -74,7 +78,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 subtask.getName() + "," +
                 subtask.getStatus() + "," +
                 subtask.getDescription() + "," +
-                subtask.getEpicId() + "\r\n";
+                subtask.getEpicId() + "," +
+                subtask.getStartTime().format(Task.DATE_TIME_FORMATTER) + "," +
+                subtask.getDuration().toHours() + "\r\n";
     }
 
     //метод записывает пустую строку, далее получает из списка задачи,
@@ -95,7 +101,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     //метод получает историю в виде строки и передает ее для записи в файл
-    private void writeHistory(String history) {
+    public void writeHistory(String history) {
         dataToWriteToFile = history;
         try {
             save();
@@ -149,6 +155,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         task.setDescription(taskLine[4]);
         task.setStatus(Status.valueOf(taskLine[3]));
         task.setType(TaskTypes.valueOf(taskLine[1]));
+        task.setStartTime(taskLine[6]);
+        task.setDuration(Long.parseLong(taskLine[7]));
         return task;
     }
 
@@ -160,6 +168,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         epic.setDescription(taskLine[4]);
         epic.setStatus(Status.valueOf(taskLine[3]));
         epic.setType(TaskTypes.valueOf(taskLine[1]));
+        epic.setStartTime(taskLine[6]);
+        epic.setDuration(Long.parseLong(taskLine[7]));
         return epic;
     }
 
@@ -171,6 +181,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         subtask.setDescription(taskLine[4]);
         subtask.setStatus(Status.valueOf(taskLine[3]));
         subtask.setType(TaskTypes.valueOf(taskLine[1]));
+        subtask.setStartTime(taskLine[6]);
+        subtask.setDuration(Long.parseLong(taskLine[7]));
         return subtask;
     }
 
@@ -202,7 +214,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     //метод считывает файл и преобразует его в строку
-    private String readFile(String path) {
+    public String readFile(String path) {
         try {
             return Files.readString(Path.of(path));
         } catch (IOException e) {
@@ -214,8 +226,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     //метод выполняет подительский метод, и сохраняет в переменную данные о задаче для записи в файл
     @Override
     public void addTask(Task task) {
+        int sizeBefore = super.tasks.size();
         super.addTask(task);
-        dataToWriteToFile = toString(task);
+        int sizeAfter = super.tasks.size();
+        if (sizeAfter > sizeBefore) {
+            dataToWriteToFile = toString(task);
+        } else {
+            return;
+        }
         try {
             save();
         } catch (ManagerSaveException e) {
@@ -226,8 +244,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     //метод выполняет подительский метод, и сохраняет в переменную данные об эпик задаче для записи в файл
     @Override
     public void addEpicTask(Epic task) {
+        int sizeBefore = super.epics.size();
         super.addEpicTask(task);
-        dataToWriteToFile = toString(task);
+        int sizeAfter = super.epics.size();
+        if (sizeAfter > sizeBefore) {
+            dataToWriteToFile = toString(task);
+        } else {
+            return;
+        }
         try {
             save();
         } catch (ManagerSaveException e) {
@@ -238,8 +262,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     //метод выполняет подительский метод, и сохраняет в переменную данные о подзадаче для записи в файл
     @Override
     public void addSubtask(Subtask task) {
+        int sizeBefore = super.subtasks.size();
         super.addSubtask(task);
-        dataToWriteToFile = toString(task);
+        int sizeAfter = super.subtasks.size();
+        if (sizeAfter > sizeBefore) {
+            dataToWriteToFile = toString(task);
+        } else {
+            return;
+        }
         try {
             save();
         } catch (ManagerSaveException e) {
@@ -257,25 +287,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         fileBackedTasksManager.readLines(data);
 
         System.out.println("\nПроверяем задачи");
-        fileBackedTasksManager.showAllTasks();
+        System.out.println(fileBackedTasksManager.showAllTasks());
         System.out.println("\nПроверяем историю");
         System.out.println(fileBackedTasksManager.getHistoryManager().getHistory());
 
-        System.out.println("\nДобавляем задачу");
+        System.out.println("\nПытаемся добавить задачу с одинаковыс DateTime");
         Task task = new Task("Task2");
         task.setDescription("Test6");
+        task.setStartTime("03.10.2022 13:00");
+        task.setDuration(1L);
         fileBackedTasksManager.addTask(task);
 
-        System.out.println("\nПроверяем что задача добавлена");
-        fileBackedTasksManager.showAllTasks();
-        System.out.println("\nВызываем задачу");
-        System.out.println(fileBackedTasksManager.getTaskById(task.getId()));
-        System.out.println("\nПроверяем что задача добавлена в историю");
-        System.out.println(fileBackedTasksManager.getHistoryManager().getHistory());
+        System.out.println("Вычисляем время завершения эпик задачи");
+        System.out.println(fileBackedTasksManager.getEpicById(2).getEndTime());
 
         System.out.println("\nСохраняем историю перед выходом");
         fileBackedTasksManager.writeHistory(toString(fileBackedTasksManager.getHistoryManager()));
-
     }
 
 }

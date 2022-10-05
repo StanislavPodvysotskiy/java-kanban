@@ -1,8 +1,10 @@
-package managers;
-import tasks.Epic;
-import tasks.Status;
-import tasks.Subtask;
-import tasks.Task;
+package main.managers;
+import main.tasks.Epic;
+import main.tasks.Status;
+import main.tasks.Subtask;
+import main.tasks.Task;
+
+import java.util.TreeSet;
 
 public interface TaskManager {
 
@@ -18,7 +20,7 @@ public interface TaskManager {
 
     Subtask getSubtaskById(int id);
 
-    void showAllTasks();
+    String showAllTasks();
 
     String getStatusById(int id);
 
@@ -32,10 +34,14 @@ public interface TaskManager {
 
     void removeAllTasks();
 
-    void getEpicSubtasks(int id);
+    String getEpicSubtasks(int id);
 
     Status getEpicStatus(int id);
 
     HistoryManager getHistoryManager();
+
+    TreeSet<Task> getPrioritizedTasks();
+
+    TreeSet<Epic> getPrioritizedEpics();
 
 }

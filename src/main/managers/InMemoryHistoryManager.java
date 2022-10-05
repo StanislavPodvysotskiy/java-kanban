@@ -1,5 +1,5 @@
-package managers;
-import tasks.Task;
+package main.managers;
+import main.tasks.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
@@ -38,7 +38,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         nodeMap.clear();
     }
 
-    public void linkLast(Task task) {
+    private void linkLast(Task task) {
         final Node<Task> oldTail = tail;
         final Node<Task> newNode = new Node<>(oldTail, task, null);
         tail = newNode;
@@ -51,11 +51,11 @@ public class InMemoryHistoryManager implements HistoryManager {
         nodeMap.put(task.getId(), newNode);
     }
 
-    public List<Task> getTasks() {
+    private List<Task> getTasks() {
         return new ArrayList<>(tasksHistory);
     }
 
-    public void removeNode(Node<Task> node) {
+    private void removeNode(Node<Task> node) {
         if (node.prev != null) {
             Node<Task> prevNode = node.prev;
             prevNode.next = node.next;

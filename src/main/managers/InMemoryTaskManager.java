@@ -1,61 +1,139 @@
-package managers;
-import tasks.Epic;
-import tasks.Status;
-import tasks.Subtask;
-import tasks.Task;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+package main.managers;
+
+import main.tasks.Epic;
+import main.tasks.Status;
+import main.tasks.Subtask;
+import main.tasks.Task;
+
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private int lastId = 1;
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
     protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    HistoryManager historyManager = Managers.getDefaultHistory();
+    protected HistoryManager historyManager = Managers.getDefaultHistory();
+    protected TreeSet<Task>  taskTreeSet = new TreeSet<>(
+            (Task t1, Task t2) -> t1.getStartTime().compareTo(t2.getStartTime()));
+    protected TreeSet<Epic>  epicTreeSet = new TreeSet<>(
+            (Epic e1, Epic e2) -> e1.getStartTime().compareTo(e2.getStartTime()));
 
     //метод добавляет новую задачу в хэшмап
     @Override
     public void addTask(Task task) {
-        if (task.getId() == -1) {
-            while (tasks.containsKey(lastId) || epics.containsKey(lastId) || subtasks.containsKey(lastId)) {
-                lastId++;
-            }
-            task.setId(lastId++);
-        }
-        tasks.put(task.getId(), task);
-        System.out.println("Задача создана");
-    }
-
-    //метод добавляет новую зпик задачу в хэшмап
-    @Override
-    public void addEpicTask(Epic task) {
-        if (task.getId() == -1) {
-            while (tasks.containsKey(lastId) || epics.containsKey(lastId) || subtasks.containsKey(lastId)) {
-                lastId++;
-            }
-            task.setId(lastId++);
-        }
-        epics.put(task.getId(), task);
-        System.out.println("Задача создана");
-    }
-
-    //метод добавляет новую подзадачу в хэшмап
-    @Override
-    public void addSubtask(Subtask task) {
-        if (epics.containsKey(task.getEpicId())) {
+        if(taskCheckDateTime(task)) {
             if (task.getId() == -1) {
                 while (tasks.containsKey(lastId) || epics.containsKey(lastId) || subtasks.containsKey(lastId)) {
                     lastId++;
                 }
                 task.setId(lastId++);
             }
-            epics.get(task.getEpicId()).addSubtask(task);
-            subtasks.put(task.getId(), task);
+            tasks.put(task.getId(), task);
+            taskTreeSet.add(task);
             System.out.println("Задача создана");
-        } else {
-            System.out.println("Эпик задачи с таким ID не найдено");
         }
+    }
+
+    //метод добавляет новую зпик задачу в хэшмап
+    @Override
+    public void addEpicTask(Epic task) {
+        if(epicCheckDateTime(task)) {
+            if (task.getId() == -1) {
+                while (tasks.containsKey(lastId) || epics.containsKey(lastId) || subtasks.containsKey(lastId)) {
+                    lastId++;
+                }
+                task.setId(lastId++);
+            }
+            epics.put(task.getId(), task);
+            epicTreeSet.add(task);
+            System.out.println("Задача создана");
+        }
+    }
+
+    //метод добавляет новую подзадачу в хэшмап
+    @Override
+    public void addSubtask(Subtask task) {
+        if(subtaskCheckDateTime(task)) {
+            if (epics.containsKey(task.getEpicId())) {
+                if (task.getId() == -1) {
+                    while (tasks.containsKey(lastId) || epics.containsKey(lastId) || subtasks.containsKey(lastId)) {
+                        lastId++;
+                    }
+                    task.setId(lastId++);
+                }
+                epics.get(task.getEpicId()).addSubtask(task);
+                subtasks.put(task.getId(), task);
+                System.out.println("Задача создана");
+            } else {
+                System.out.println("Эпик задачи с таким ID не найдено");
+            }
+        }
+    }
+
+    protected boolean taskCheckDateTime(Task task) {
+        for (Map.Entry<Integer, Task> entry: tasks.entrySet()) {
+            if(entry.getValue().getStartTime().equals(task.getStartTime())) {
+                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
+                return false;
+            }
+        }
+        for (Map.Entry<Integer, Epic> entry: epics.entrySet()) {
+            if(entry.getValue().getStartTime().equals(task.getStartTime())) {
+                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
+                return false;
+            }
+        }
+        for (Map.Entry<Integer, Subtask> entry: subtasks.entrySet()) {
+            if(entry.getValue().getStartTime().equals(task.getStartTime())) {
+                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected boolean epicCheckDateTime(Epic epic) {
+        for (Map.Entry<Integer, Task> entry: tasks.entrySet()) {
+            if(entry.getValue().getStartTime().equals(epic.getStartTime())) {
+                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
+                return false;
+            }
+        }
+        for (Map.Entry<Integer, Epic> entry: epics.entrySet()) {
+            if(entry.getValue().getStartTime().equals(epic.getStartTime())) {
+                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
+                return false;
+            }
+        }
+        for (Map.Entry<Integer, Subtask> entry: subtasks.entrySet()) {
+            if(entry.getValue().getStartTime().equals(epic.getStartTime())) {
+                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected boolean subtaskCheckDateTime(Subtask subtask) {
+        for (Map.Entry<Integer, Task> entry: tasks.entrySet()) {
+            if(entry.getValue().getStartTime().equals(subtask.getStartTime())) {
+                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
+                return false;
+            }
+        }
+        for (Map.Entry<Integer, Epic> entry: epics.entrySet()) {
+            if(entry.getValue().getStartTime().equals(subtask.getStartTime())) {
+                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
+                return false;
+            }
+        }
+        for (Map.Entry<Integer, Subtask> entry: subtasks.entrySet()) {
+            if(entry.getValue().getStartTime().equals(subtask.getStartTime())) {
+                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
+                return false;
+            }
+        }
+        return true;
     }
 
     //метод возвращает название и описание задачи
@@ -90,26 +168,30 @@ public class InMemoryTaskManager implements TaskManager {
 
     //метод проходит циклами по всем хэшмапа, если в них есть объекты и отображает их
     @Override
-    public void showAllTasks() {
-        if (tasks.isEmpty() && epics.isEmpty() && subtasks.isEmpty()) {
-            System.out.println("Задач пока нет");
-        } else {
-            if (!tasks.isEmpty()) {
-                for (Map.Entry<Integer, Task> task : tasks.entrySet()) {
-                    System.out.println("ID " + task.getKey() + " Название " + task.getValue().getName());
-                }
-            }
-            if (!epics.isEmpty()) {
-                for (Map.Entry<Integer, Epic> epicTask : epics.entrySet()) {
-                    System.out.println("ID " + epicTask.getKey() + " Название " + epicTask.getValue().getName());
-                }
-            }
-            if (!subtasks.isEmpty()) {
-                for (Map.Entry<Integer, Subtask> subtask : subtasks.entrySet()) {
-                    System.out.println("ID " + subtask.getKey() + " Название " + subtask.getValue().getName());
-                }
+    public String showAllTasks() {
+        StringBuilder value = new StringBuilder();
+        if (!tasks.isEmpty()) {
+            for (Map.Entry<Integer, Task> task : tasks.entrySet()) {
+                value.append("ID ").append(task.getKey()).append(" Название ").
+                        append(task.getValue().getName()).append("\n");
             }
         }
+        if (!epics.isEmpty()) {
+            for (Map.Entry<Integer, Epic> epicTask : epics.entrySet()) {
+                value.append("ID ").append(epicTask.getKey()).append(" Название ").
+                        append(epicTask.getValue().getName()).append("\n");
+            }
+        }
+        if (!subtasks.isEmpty()) {
+            for (Map.Entry<Integer, Subtask> subtask : subtasks.entrySet()) {
+                value.append("ID ").append(subtask.getKey()).append(" Название ").
+                        append(subtask.getValue().getName()).append("\n");
+            }
+        }
+        if (tasks.isEmpty() && epics.isEmpty() && subtasks.isEmpty()) {
+            value.append("Задач пока нет");
+        }
+        return value.toString();
     }
 
     //запрос статуса у задачи, для эпик задачи статус рассчитывается отдельно
@@ -206,18 +288,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     //метод выводит все подзадачи выбранной эпик задачи, если они есть
     @Override
-    public void getEpicSubtasks(int id) {
-        if (!epics.containsKey(id)) {
-            System.out.println("Такой эпик задачи нет");
-        } else if (epics.get(id).getSubtasks().isEmpty()) {
-            System.out.println("Подзадач пока нет");
+    public String getEpicSubtasks(int id) {
+        if (epics.get(id).getSubtasks().isEmpty()) {
+            return "Подзадач пока нет";
         } else {
             System.out.println("Поиск подзадач для эпик задачи с ID " + id);
             for (Task task : epics.get(id).getSubtasks()) {
                 historyManager.add(task);
-                System.out.println("Найдена подзадача ID " + task.getId());
+                return "Найдена подзадача ID " + task.getId();
             }
         }
+        return "Такой эпик задачи нет";
     }
 
     //метод рассчитывает статус эпик задачи
@@ -246,6 +327,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     public HistoryManager getHistoryManager() {
         return historyManager;
+    }
+
+    @Override
+    public TreeSet<Task> getPrioritizedTasks() {
+        return taskTreeSet;
+    }
+
+    @Override
+    public TreeSet<Epic> getPrioritizedEpics() {
+        return epicTreeSet;
     }
 
 }

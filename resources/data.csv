@@ -1,8 +1,8 @@
-id,type,name,status,description,epic
-1,TASK,Task1,NEW,Test1
-2,EPIC,Epic1,IN_PROGRESS,Test2
-3,EPIC,Epic2,NEW,Test3
-4,SUBTASK,Subtask1,IN_PROGRESS,Test4,2
-5,SUBTASK,Subtask2,NEW,Test5,2
+id,type,name,status,description,epic,datetime,duration
+1,TASK,Task1,NEW,task1,,03.10.2022 13:00,3
+2,EPIC,Epic1,IN_PROGRESS,Test2,,05.10.2022 13:00,0
+3,EPIC,Epic2,NEW,Test3,,06.10.2022 13:00,0
+4,SUBTASK,Subtask1,IN_PROGRESS,Test4,2,05.10.2022 15:00,2
+5,SUBTASK,Subtask2,NEW,Test5,2,03.10.2022 17:00,1
 
-4,1,2,5,3
+4,1,5,3,2
