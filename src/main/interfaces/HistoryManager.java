@@ -1,4 +1,4 @@
-package main.managers;
+package main.interfaces;
 import main.tasks.Task;
 import java.util.List;
 

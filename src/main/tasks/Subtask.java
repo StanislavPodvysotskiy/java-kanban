@@ -1,5 +1,7 @@
 package main.tasks;
 
+import main.enums.TaskTypes;
+
 public class Subtask extends Task {
 
     //в этой переменной хранится ID эпика, для которого она создана

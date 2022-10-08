@@ -1,4 +1,5 @@
 package main.managers;
+import main.interfaces.HistoryManager;
 import main.tasks.Task;
 import java.util.*;
 

@@ -1,10 +1,10 @@
 package test.managers;
 
-import main.managers.HistoryManager;
+import main.interfaces.HistoryManager;
 import main.managers.Managers;
-import main.managers.TaskManager;
+import main.interfaces.TaskManager;
 import main.tasks.Epic;
-import main.tasks.Status;
+import main.enums.Status;
 import main.tasks.Subtask;
 import main.tasks.Task;
 import org.junit.jupiter.api.Assertions;

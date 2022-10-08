@@ -1,4 +1,4 @@
-package main.tasks;
+package main.enums;
 
 public enum TaskTypes {
     TASK,

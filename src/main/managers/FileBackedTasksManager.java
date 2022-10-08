@@ -1,5 +1,8 @@
 package main.managers;
 
+import main.enums.Status;
+import main.enums.TaskTypes;
+import main.interfaces.HistoryManager;
 import main.tasks.*;
 
 import java.io.FileWriter;

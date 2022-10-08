@@ -1,7 +1,7 @@
 package test.managers;
 
 import main.managers.Managers;
-import main.managers.TaskManager;
+import main.interfaces.TaskManager;
 import main.tasks.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,5 +1,8 @@
 package main.tasks;
 
+import main.enums.Status;
+import main.enums.TaskTypes;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

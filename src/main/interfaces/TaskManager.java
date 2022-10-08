@@ -1,6 +1,6 @@
-package main.managers;
+package main.interfaces;
 import main.tasks.Epic;
-import main.tasks.Status;
+import main.enums.Status;
 import main.tasks.Subtask;
 import main.tasks.Task;
 

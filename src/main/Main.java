@@ -1,7 +1,7 @@
 package main;
 
 import main.managers.Managers;
-import main.managers.TaskManager;
+import main.interfaces.TaskManager;
 import main.tasks.Task;
 
 public class Main {

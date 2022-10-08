@@ -1,4 +1,6 @@
 package main.tasks;
+import main.enums.TaskTypes;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -19,20 +21,6 @@ public class Epic extends Task {
     public ArrayList<Subtask> getSubtasks() {
         return subtasks;
     }
-
-    /*@Override
-    public LocalDateTime getStartTime() {
-        if (subtasks.isEmpty()) {
-            return null;
-        }
-        startTime = subtasks.get(0).getStartTime();
-        for (Subtask subtask : subtasks) {
-            if (subtask.getStartTime().isBefore(startTime)) {
-                startTime = subtask.getStartTime();
-            }
-        }
-        return startTime;
-    }*/
 
     @Override
     public String getEndTime() {

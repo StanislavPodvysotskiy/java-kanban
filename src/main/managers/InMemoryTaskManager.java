@@ -1,10 +1,13 @@
 package main.managers;
 
+import main.interfaces.HistoryManager;
+import main.interfaces.TaskManager;
 import main.tasks.Epic;
-import main.tasks.Status;
+import main.enums.Status;
 import main.tasks.Subtask;
 import main.tasks.Task;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -21,7 +24,7 @@ public class InMemoryTaskManager implements TaskManager {
     //метод добавляет новую задачу в хэшмап
     @Override
     public void addTask(Task task) {
-        if(taskCheckDateTime(task)) {
+        if(checkDateTime(task.getStartTime())) {
             if (task.getId() == -1) {
                 while (tasks.containsKey(lastId) || epics.containsKey(lastId) || subtasks.containsKey(lastId)) {
                     lastId++;
@@ -37,7 +40,7 @@ public class InMemoryTaskManager implements TaskManager {
     //метод добавляет новую зпик задачу в хэшмап
     @Override
     public void addEpicTask(Epic task) {
-        if(epicCheckDateTime(task)) {
+        if(checkDateTime(task.getStartTime())) {
             if (task.getId() == -1) {
                 while (tasks.containsKey(lastId) || epics.containsKey(lastId) || subtasks.containsKey(lastId)) {
                     lastId++;
@@ -53,7 +56,7 @@ public class InMemoryTaskManager implements TaskManager {
     //метод добавляет новую подзадачу в хэшмап
     @Override
     public void addSubtask(Subtask task) {
-        if(subtaskCheckDateTime(task)) {
+        if(checkDateTime(task.getStartTime())) {
             if (epics.containsKey(task.getEpicId())) {
                 if (task.getId() == -1) {
                     while (tasks.containsKey(lastId) || epics.containsKey(lastId) || subtasks.containsKey(lastId)) {
@@ -70,65 +73,21 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    protected boolean taskCheckDateTime(Task task) {
+    protected boolean checkDateTime(LocalDateTime startTime) {
         for (Map.Entry<Integer, Task> entry: tasks.entrySet()) {
-            if(entry.getValue().getStartTime().equals(task.getStartTime())) {
+            if(entry.getValue().getStartTime().equals(startTime)) {
                 System.out.println("На данную дату и время уже есть задача, выбирите другое время");
                 return false;
             }
         }
         for (Map.Entry<Integer, Epic> entry: epics.entrySet()) {
-            if(entry.getValue().getStartTime().equals(task.getStartTime())) {
+            if(entry.getValue().getStartTime().equals(startTime)) {
                 System.out.println("На данную дату и время уже есть задача, выбирите другое время");
                 return false;
             }
         }
         for (Map.Entry<Integer, Subtask> entry: subtasks.entrySet()) {
-            if(entry.getValue().getStartTime().equals(task.getStartTime())) {
-                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    protected boolean epicCheckDateTime(Epic epic) {
-        for (Map.Entry<Integer, Task> entry: tasks.entrySet()) {
-            if(entry.getValue().getStartTime().equals(epic.getStartTime())) {
-                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
-                return false;
-            }
-        }
-        for (Map.Entry<Integer, Epic> entry: epics.entrySet()) {
-            if(entry.getValue().getStartTime().equals(epic.getStartTime())) {
-                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
-                return false;
-            }
-        }
-        for (Map.Entry<Integer, Subtask> entry: subtasks.entrySet()) {
-            if(entry.getValue().getStartTime().equals(epic.getStartTime())) {
-                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    protected boolean subtaskCheckDateTime(Subtask subtask) {
-        for (Map.Entry<Integer, Task> entry: tasks.entrySet()) {
-            if(entry.getValue().getStartTime().equals(subtask.getStartTime())) {
-                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
-                return false;
-            }
-        }
-        for (Map.Entry<Integer, Epic> entry: epics.entrySet()) {
-            if(entry.getValue().getStartTime().equals(subtask.getStartTime())) {
-                System.out.println("На данную дату и время уже есть задача, выбирите другое время");
-                return false;
-            }
-        }
-        for (Map.Entry<Integer, Subtask> entry: subtasks.entrySet()) {
-            if(entry.getValue().getStartTime().equals(subtask.getStartTime())) {
+            if(entry.getValue().getStartTime().equals(startTime)) {
                 System.out.println("На данную дату и время уже есть задача, выбирите другое время");
                 return false;
             }

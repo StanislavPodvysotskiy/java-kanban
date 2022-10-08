@@ -1,7 +1,7 @@
 package test.managers;
 
 import main.managers.FileBackedTasksManager;
-import main.managers.HistoryManager;
+import main.interfaces.HistoryManager;
 import main.tasks.Subtask;
 import main.tasks.Task;
 import org.junit.jupiter.api.Test;
