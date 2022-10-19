@@ -20,7 +20,7 @@ public interface TaskManager {
 
     Subtask getSubtaskById(int id);
 
-    String showAllTasks();
+    String getAllTasks();
 
     String getStatusById(int id);
 

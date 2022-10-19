@@ -24,6 +24,15 @@ public class Task {
         this.type = TaskTypes.TASK;
     }
 
+    public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+        this.type = TaskTypes.TASK;
+    }
+
     public String getName() {
         return name;
     }

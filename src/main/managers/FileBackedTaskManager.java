@@ -12,12 +12,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileBackedTasksManager extends InMemoryTaskManager {
+public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final String path;
     private String dataToWriteToFile; //в поле хранятся данные для записи
 
-    public FileBackedTasksManager(String path) {
+    public FileBackedTaskManager(String path) {
         this.path = path;
     }
 
@@ -89,7 +89,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     //метод записывает пустую строку, далее получает из списка задачи,
     //далее из задач получает их ID и добавляет в строку
     //получаем пустую строку и последовательность ID соответствующую истории вызовов задач
-    private static String toString(HistoryManager manager) {
+    public String toString(HistoryManager manager) {
         StringBuilder history = new StringBuilder();
         history.append("\r\n");
         for (int i = 0; i < manager.getHistory().size(); i++) {
@@ -280,32 +280,44 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
+    public void addTaskSuper(Task task) {
+        super.addTask(task);
+    }
+
+    public void addEpicTaskSuper(Epic task) {
+        super.addEpicTask(task);
+    }
+
+    public void addSubtaskSuper(Subtask task) {
+        super.addSubtask(task);
+    }
+
     public static void main(String[] args) {
 
         System.out.println("\nЗагружаем программу");
-        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager("resources/data.csv");
+        FileBackedTaskManager fileBackedTaskManager = Managers.getDefaultFileBackedTaskManager("resources/data.csv");
         System.out.println("\nСчитываем файл");
-        String data = fileBackedTasksManager.readFile(fileBackedTasksManager.getPath());
+        String data = fileBackedTaskManager.readFile(fileBackedTaskManager.getPath());
         System.out.println("\nВосстанавливаем данные и историю просмотров");
-        fileBackedTasksManager.readLines(data);
+        fileBackedTaskManager.readLines(data);
 
         System.out.println("\nПроверяем задачи");
-        System.out.println(fileBackedTasksManager.showAllTasks());
+        System.out.println(fileBackedTaskManager.getAllTasks());
         System.out.println("\nПроверяем историю");
-        System.out.println(fileBackedTasksManager.getHistoryManager().getHistory());
+        System.out.println(fileBackedTaskManager.getHistoryManager().getHistory());
 
         System.out.println("\nПытаемся добавить задачу с одинаковыс DateTime");
         Task task = new Task("Task2");
         task.setDescription("Test6");
         task.setStartTime("03.10.2022 13:00");
         task.setDuration(1L);
-        fileBackedTasksManager.addTask(task);
+        fileBackedTaskManager.addTask(task);
 
         System.out.println("Вычисляем время завершения эпик задачи");
-        System.out.println(fileBackedTasksManager.getEpicById(2).getEndTime());
+        System.out.println(fileBackedTaskManager.getEpicById(2).getEndTime());
 
         System.out.println("\nСохраняем историю перед выходом");
-        fileBackedTasksManager.writeHistory(toString(fileBackedTasksManager.getHistoryManager()));
+        fileBackedTaskManager.writeHistory(fileBackedTaskManager.toString(fileBackedTaskManager.getHistoryManager()));
     }
 
 }

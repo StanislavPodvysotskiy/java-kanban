@@ -1,5 +1,6 @@
 package test.managers;
 
+import main.managers.InMemoryTaskManager;
 import main.managers.Managers;
 import main.interfaces.TaskManager;
 import main.tasks.Task;
@@ -16,7 +17,8 @@ class InMemoryHistoryManagerTest {
 
     @BeforeEach
     public void beforeEach() {
-        taskManager = Managers.getDefault();
+        taskManager = new InMemoryTaskManager() {
+        };
     }
 
     @Test

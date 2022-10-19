@@ -1,6 +1,8 @@
 package main.tasks;
+import main.enums.Status;
 import main.enums.TaskTypes;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -11,6 +13,12 @@ public class Epic extends Task {
 
     public Epic(String name) {
         super(name);
+        super.type = TaskTypes.EPIC;
+    }
+
+    public Epic(String name, String description, Status status,
+                LocalDateTime startTime, Duration duration, TaskTypes type) {
+        super(name, description, status, startTime, duration);
         super.type = TaskTypes.EPIC;
     }
 

@@ -12,14 +12,38 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private int lastId = 1;
-    protected final HashMap<Integer, Task> tasks = new HashMap<>();
-    protected final HashMap<Integer, Epic> epics = new HashMap<>();
-    protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected  HashMap<Integer, Task> tasks = new HashMap<>();
+    protected  HashMap<Integer, Epic> epics = new HashMap<>();
+    protected  HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected HistoryManager historyManager = Managers.getDefaultHistory();
     protected TreeSet<Task>  taskTreeSet = new TreeSet<>(
             (Task t1, Task t2) -> t1.getStartTime().compareTo(t2.getStartTime()));
     protected TreeSet<Epic>  epicTreeSet = new TreeSet<>(
             (Epic e1, Epic e2) -> e1.getStartTime().compareTo(e2.getStartTime()));
+
+    public HashMap<Integer, Task> getTasks() {
+        return tasks;
+    }
+
+    public HashMap<Integer, Epic> getEpics() {
+        return epics;
+    }
+
+    public HashMap<Integer, Subtask> getSubtasks() {
+        return subtasks;
+    }
+
+    public void setTasks(HashMap<Integer, Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    public void setEpics(HashMap<Integer, Epic> epics) {
+        this.epics = epics;
+    }
+
+    public void setSubtasks(HashMap<Integer, Subtask> subtasks) {
+        this.subtasks = subtasks;
+    }
 
     //метод добавляет новую задачу в хэшмап
     @Override
@@ -127,7 +151,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //метод проходит циклами по всем хэшмапа, если в них есть объекты и отображает их
     @Override
-    public String showAllTasks() {
+    public String getAllTasks() {
         StringBuilder value = new StringBuilder();
         if (!tasks.isEmpty()) {
             for (Map.Entry<Integer, Task> task : tasks.entrySet()) {

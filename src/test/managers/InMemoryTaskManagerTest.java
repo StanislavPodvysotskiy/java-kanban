@@ -1,6 +1,7 @@
 package test.managers;
 
 import main.interfaces.HistoryManager;
+import main.managers.InMemoryTaskManager;
 import main.managers.Managers;
 import main.interfaces.TaskManager;
 import main.tasks.Epic;
@@ -22,7 +23,7 @@ class InMemoryTaskManagerTest {
 
     @BeforeEach
     public void beforeEach() {
-        taskManager = Managers.getDefault();
+        taskManager = new InMemoryTaskManager();
     }
 
     @Test
@@ -73,7 +74,7 @@ class InMemoryTaskManagerTest {
         task2.setDescription("test");
         taskManager.addTask(task2);
 
-        assertEquals("ID 1 Название task1\n", taskManager.showAllTasks());
+        assertEquals("ID 1 Название task1\n", taskManager.getAllTasks());
     }
 
     @Test
@@ -124,12 +125,12 @@ class InMemoryTaskManagerTest {
         task.setDescription("test");
         task.setStartTime("03.10.2022 15:00");
         taskManager.addTask(task);
-        assertEquals("ID 1 Название task\n", taskManager.showAllTasks());
+        assertEquals("ID 1 Название task\n", taskManager.getAllTasks());
     }
 
     @Test
     public void shouldGiveMessageWhenNoTasks() {
-        String test = taskManager.showAllTasks();
+        String test = taskManager.getAllTasks();
         assertEquals("Задач пока нет", test);
     }
 

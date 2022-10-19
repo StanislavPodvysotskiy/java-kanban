@@ -5,11 +5,15 @@ import main.interfaces.TaskManager;
 
 public class Managers {
 
-    public static TaskManager getDefault() {
-        return new InMemoryTaskManager();
+    public static HTTPTaskManager getDefault(String path) {
+        return new HTTPTaskManager(path);
     }
 
     public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
+    }
+
+    public static FileBackedTaskManager getDefaultFileBackedTaskManager(String path) {
+        return new FileBackedTaskManager(path);
     }
 }
